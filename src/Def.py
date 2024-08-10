@@ -138,6 +138,29 @@ class Pointer:
         self.value = value
 
 
+class EnumType:
+    def __init__(self, name, members):
+        self.name = name
+        self.members = members
+        self.check_enum_members_type(members)
+    
+    def len_of(self):
+        return len(self.members)
+
+    def size_of(self):
+        # this part of code needed to specialized by language's C builtin 
+        return sum([sizeof(member_type) for member_type in self.members.values()])
+
+    def type_of(self):
+        return "enum"
+
+
+def check_enum_members_type(members):
+    types = set(members.values())
+    if len(types) > 1:
+        raise TypeError("All enum members must be of the same type.")
+
+
 @dataclass
 class Array:
     """

@@ -16,6 +16,7 @@ from Lexer import post_process
 from Lexer import token_is_bin_op
 from Lexer import token_is_unary_op
 from Lexer import token_is_rassoc
+from Def import EnumType
 from Def import Node
 from Def import NodeKind
 from Def import Variable
@@ -1694,3 +1695,33 @@ class Parser:
 
         print_error('declaration',
                     f'Unknown meta kind {meta_kind}', self)
+
+
+    def parse_enum_definition(self, tokens):
+        enum_name = tokens[1]
+        members = {}
+
+        i = 2
+        while tokens[i] != 'end':
+            if tokens[i] == '=':
+                member_name = tokens[i-1]
+                member_value = tokens[i+1]
+                member_type = type(member_value)
+                members[member_name] = member_type
+                i += 2
+            elif tokens[i] == ':':
+                member_name = tokens[i-1]
+                member_type = tokens[i+1]
+                member_value = tokens[i+3]
+                members[member_name] = member_type
+                i += 4
+            else:
+                i += 1
+
+        return EnumType(enum_name, members)
+
+    # Checking for enums' members' types can be done at Def.py
+    # def check_enum_members_type(self, members):
+    #     types = set(members.values())
+    #     if len(types) > 1:
+    #         raise TypeError("All enum members must be of the same type.")
